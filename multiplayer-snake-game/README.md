@@ -40,7 +40,7 @@ The Controller moves the food and spawns walls to stop the Snake from winning.
 ### 1️⃣ Clone the repository
 **macOS / Linux**
 ```bash
-git clone https://github.com/Pranav10R/test-snake.git
+git clone https://github.com/Pranav10ss/python-projects.git
 ```
 ### 2️⃣ Create a virtual environment
 **Windows**
