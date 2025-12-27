@@ -5,8 +5,8 @@ A real-time **multiplayer Snake game** built with **Python, Pygame**, and **webs
 - One player is the **Controller**
 - Both players connect to the same server on a local network
 
-The Snake must score enough points **within the time limit** to win.  
-The Controller moves the food and spawns walls to stop the Snake from winning.
+The **Snake** must score enough points **within the time limit** to win.  
+The **Controller** moves the food and spawns walls to stop the Snake from winning.
 
 ---
 
@@ -29,9 +29,7 @@ The Controller moves the food and spawns walls to stop the Snake from winning.
 ## 🧰 Requirements
 
 ### ✅ System Requirements
-- **Python 3.10 – 3.12**  
-  ❗ Python **3.14 is NOT supported** (Pygame font module breaks)
-
+- **Python version 3.10 – 3.12** 
 - Both players must be on the **same local network**
 - macOS / Linux / Windows supported
 
@@ -42,14 +40,8 @@ The Controller moves the food and spawns walls to stop the Snake from winning.
 ```bash
 git clone https://github.com/Pranav10ss/python-projects.git
 ```
-### 2️⃣ Create a virtual environment
-**Windows**
-```bash
-python3.12 -m venv venv
-source venv/bin/activate
-```
 
-### 3️⃣ Install dependencies
+### 2️⃣ Install dependencies
 ```bash
 pip install pygame
 ```
