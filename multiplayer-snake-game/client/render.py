@@ -19,7 +19,7 @@ class Render:
         4: (0, 0, 255),
         5: (255, 0, 255),
         6: (0, 255, 255),
-        7: (255, 255, 255)
+        7: (255, 255, 255),
     }
 
     def __init__(self, username, dimensions, client):
@@ -42,9 +42,9 @@ class Render:
         self.clock = pygame.time.Clock()
         self.font = pygame.font.SysFont("monospace", 16)
 
-        # Temporary window until game starts
+        # Temporary window (before game starts)
         self.screen = pygame.display.set_mode((600, 400))
-        pygame.display.set_caption("SNAKE")
+        pygame.display.set_caption("Snake")
 
         self.game_over = False
         self.game_over_message = ""
@@ -60,7 +60,7 @@ class Render:
     # called by client thread
     def update_state(self, new_state):
         self.state = new_state
-
+    
     def run_frame(self):
         # game instructions for player based on role
         if self.ui_state == UIState.INSTRUCTIONS:
@@ -69,7 +69,7 @@ class Render:
             if now - self.instruction_start_time >= 9000:
                 self.ui_state = UIState.GAME
                 return
-            
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.cleanup()
@@ -92,7 +92,7 @@ class Render:
             pygame.display.flip()
             self.clock.tick(30)
             return
-        
+
         if self.ui_state == UIState.USERNAME:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -115,12 +115,12 @@ class Render:
             pygame.display.flip()
             self.clock.tick(30)
             return
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.cleanup()
                 return
-            
+
             if event.type != pygame.KEYDOWN:
                 continue
 
@@ -134,7 +134,7 @@ class Render:
 
             role = player["role"]
 
-            # snake controls
+            # Snake CONTROLS
             if role == "snake":
                 if event.key == pygame.K_w:
                     self.client.send_direction("w")
@@ -145,7 +145,7 @@ class Render:
                 elif event.key == pygame.K_d:
                     self.client.send_direction("d")
 
-            # controller controls(food movement and wall spawning)
+            # CONTROLLER CONTROLS (food movement + spawn_wall)
             if role == "controller":
                 if event.key == pygame.K_SPACE:
                     self.client.send_action("spawn_wall")
@@ -157,16 +157,18 @@ class Render:
                     self.client.send_action("food_left")
                 elif event.key == pygame.K_RIGHT:
                     self.client.send_action("food_right")
-            
-            # drawing
+
+        # drawing
         if self.ui_state == UIState.GAME:
-            self.draw_game()
+            self.draw()
+
         pygame.display.flip()
         self.clock.tick(15)
 
     # main draw loop
     def draw(self):
         self.screen.fill((0, 0, 0))
+
         self.draw_board()
         self.draw_food(self.state["food_pos"])
         self.draw_snakes(self.state["players"])
@@ -186,12 +188,16 @@ class Render:
             remaining = self.state.get("wall_spawns_left", {}).get(self.username, 0)
 
             text = self.font.render(
-                f"WALL SPAWNS LEFT: {remaining}", True, (255, 100, 100)
+                f"WALL SPAWNS LEFT: {remaining}",
+                True,
+                (255, 100, 100)
             )
             text_rect = text.get_rect(
-                top=10, right=self.width * self.CELL_SIZE - 10
+                top=10,
+                right=self.width * self.CELL_SIZE - 10
             )
             self.screen.blit(text, text_rect)
+
         self.screen.blit(label, (10, 10))
 
     def draw_board(self):
@@ -204,17 +210,20 @@ class Render:
 
     def setup_game_screen(self):
         self.height, self.width = self.dimensions
+
         self.screen_width = (
             self.width * self.CELL_SIZE + self.LEADERBOARD_WIDTH
         )
         self.screen_height = self.height * self.CELL_SIZE
+
         self.screen = pygame.display.set_mode(
             (self.screen_width, self.screen_height)
         )
 
     def draw_username_screen(self):
         self.screen.fill((0, 0, 0))
-        title = self.font.render("Enter Username:", True, (255, 255, 255))
+
+        title = self.font.render("Enter Username", True, (255, 255, 255))
         name = self.font.render(self.input_text, True, (0, 255, 0))
         hint = self.font.render("Press ENTER to continue", True, (150, 150, 150))
 
@@ -224,18 +233,17 @@ class Render:
 
     def handle_username_input(self, event):
         if event.type == pygame.KEYDOWN:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN and self.input_text:
-                    self.client.send_username(self.input_text)
-                    self.ui_state = UIState.WAITING
-                elif event.key == pygame.K_BACKSPACE:
-                    self.input_text = self.input_text[:-1]
-                else:
-                    if len(self.input_text) < 12:
-                        self.input_text += event.unicode
-                
+            if event.key == pygame.K_RETURN and self.input_text:
+                self.client.send_username(self.input_text)
+                self.ui_state = UIState.WAITING
+            elif event.key == pygame.K_BACKSPACE:
+                self.input_text = self.input_text[:-1]
+            else:
+                if len(self.input_text) < 12:
+                    self.input_text += event.unicode
+
     def draw_food(self, pos):
-        x, y = pos
+        y, x = pos
         pygame.draw.rect(
             self.screen,
             (255, 165, 0),
@@ -250,10 +258,10 @@ class Render:
     def draw_snakes(self, players):
         for username, player in players.items():
             if player["role"] != "snake":
-                continue
+                continue 
 
             colour = self.COLOURS[player["colour"]]
-            for x, y in player["segments"]:
+            for y, x in player["segments"]:
                 pygame.draw.rect(
                     self.screen,
                     colour,
@@ -264,7 +272,7 @@ class Render:
                         self.CELL_SIZE
                     )
                 )
-            
+
     def draw_score(self, score):
         text = self.font.render(f"Score: {score}", True, (255, 255, 255))
         self.screen.blit(text, (10, self.screen_height - 30))
